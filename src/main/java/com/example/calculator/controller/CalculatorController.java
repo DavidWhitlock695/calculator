@@ -19,7 +19,7 @@ public class CalculatorController {
       Number result = calculatorService.performBinaryOperation(request);
       return ResponseEntity.ok(new CalculationResponseDTO(
           result,
-          "Calculation successful",
+          null,
           true
       ));
     }

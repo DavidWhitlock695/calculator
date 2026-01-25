@@ -30,7 +30,7 @@ public class CalculatorControllerTest {
             .exchangeSuccessfully()
             .expectBody()
             .jsonPath("$.result").isEqualTo(8)
-            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.errorMessage").isEqualTo(null)
             .jsonPath("$.success").isEqualTo(true);
   }
 
@@ -48,7 +48,7 @@ public class CalculatorControllerTest {
             .exchangeSuccessfully()
             .expectBody()
             .jsonPath("$.result").isEqualTo(6)
-            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.errorMessage").isEqualTo(null)
             .jsonPath("$.success").isEqualTo(true);
   }
 
@@ -66,7 +66,7 @@ public class CalculatorControllerTest {
             .exchangeSuccessfully()
             .expectBody()
             .jsonPath("$.result").isEqualTo(42)
-            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.errorMessage").isEqualTo(null)
             .jsonPath("$.success").isEqualTo(true);
 }
 
@@ -84,7 +84,7 @@ public class CalculatorControllerTest {
             .exchangeSuccessfully()
             .expectBody()
             .jsonPath("$.result").isEqualTo(5)
-            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.errorMessage").isEqualTo(null)
             .jsonPath("$.success").isEqualTo(true);
   }
 

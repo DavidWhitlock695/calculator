@@ -4,8 +4,9 @@ import com.example.calculator.transfer.outgoing.CalculationResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.calculator.service.CalculatorService;
-import com.example.calculator.domain.BinaryOperator;
 import com.example.calculator.transfer.incoming.BinaryOperationDTO;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/calculator")
@@ -16,7 +17,7 @@ public class CalculatorController {
   @PostMapping("/binaryOperation")
   public ResponseEntity<CalculationResponseDTO>performBinaryOperation(@RequestBody BinaryOperationDTO request){
     try {
-      Number result = calculatorService.performBinaryOperation(request);
+      BigDecimal result = calculatorService.performBinaryOperation(request);
       return ResponseEntity.ok(new CalculationResponseDTO(
           result,
           null,

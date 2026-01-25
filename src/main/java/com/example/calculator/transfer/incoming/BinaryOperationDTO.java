@@ -1,3 +1,5 @@
 package com.example.calculator.transfer.incoming;
 
-public record BinaryOperationDTO(Double operandOne, Double operandTwo, String operator) {}
+import java.math.BigDecimal;
+
+public record BinaryOperationDTO(BigDecimal operandOne, BigDecimal operandTwo, String operator) {}

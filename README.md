@@ -5,13 +5,13 @@
 
 Note: "mvn clean install" would be similar, but it also makes the package available in your local mvn repo.
 
-3. Run "docker build -t returns-manager ."
+3. Run "docker build -t calculator ."
 
 This builds the image, downloading any required base images if necessary.
 It tags the resulting image with the name returns-manager. You could add a version e.g.
 "returns-manager:1.0"
 
-4. Run "docker run -p 8080:8080 returns-manager"
+4. Run "docker run -p 8080:8080 calculator:latest"
 
 To run the image in a container at port 8080 (both as seen from within and without)
 

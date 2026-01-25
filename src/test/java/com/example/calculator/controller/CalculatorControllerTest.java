@@ -17,65 +17,114 @@ public class CalculatorControllerTest {
   // Success cases
 
   @Test
-  public void integerAdditionTest(){
-    client.post().uri("/calculator/add")
+  public void performAdditionOK(){
+    client.post().uri("/calculator/binaryOperation")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"numbers\": [1, 2, 3, 4, 5]}")
+            .body("""
+                {
+                  "operandOne": 5,
+                  "operandTwo": 3,
+                  "operator": "ADD"
+                }
+                """)
             .exchangeSuccessfully()
             .expectBody()
-            .jsonPath("$.result").isEqualTo(15.0)
-            .jsonPath("$.success").isEqualTo(true)
-            .jsonPath("$.errorMessage").doesNotExist();
+            .jsonPath("$.result").isEqualTo(8)
+            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.success").isEqualTo(true);
   }
 
   @Test
-  public void decimalAdditionTest(){
-    client.post().uri("/calculator/add")
+  public void performSubtractionOK(){
+    client.post().uri("/calculator/binaryOperation")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"numbers\": [1.5, 2.5, 3.0]}")
+            .body("""
+                {
+                  "operandOne": 10,
+                  "operandTwo": 4,
+                  "operator": "SUBTRACT"
+                }
+                """)
             .exchangeSuccessfully()
             .expectBody()
-            .jsonPath("$.result").isEqualTo(7.0)
-            .jsonPath("$.success").isEqualTo(true)
-            .jsonPath("$.errorMessage").doesNotExist();
+            .jsonPath("$.result").isEqualTo(6)
+            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.success").isEqualTo(true);
   }
 
   @Test
-  public void negativeNumberAdditionTest(){
-    client.post().uri("/calculator/add")
+  public void performMultiplicationOK(){
+    client.post().uri("/calculator/binaryOperation")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"numbers\": [-1, -2, -3]}")
+            .body("""
+                {
+                  "operandOne": 7,
+                  "operandTwo": 6,
+                  "operator": "MULTIPLY"
+                }
+                """)
             .exchangeSuccessfully()
             .expectBody()
-            .jsonPath("$.result").isEqualTo(-6.0)
-            .jsonPath("$.success").isEqualTo(true)
-            .jsonPath("$.errorMessage").doesNotExist();
+            .jsonPath("$.result").isEqualTo(42)
+            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.success").isEqualTo(true);
+}
+
+  @Test
+  public void performDivisionOK(){
+    client.post().uri("/calculator/binaryOperation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body("""
+                {
+                  "operandOne": 20,
+                  "operandTwo": 4,
+                  "operator": "DIVIDE"
+                }
+                """)
+            .exchangeSuccessfully()
+            .expectBody()
+            .jsonPath("$.result").isEqualTo(5)
+            .jsonPath("$.errorMessage").isEqualTo("Calculation successful")
+            .jsonPath("$.success").isEqualTo(true);
   }
 
   // Failure cases
 
   @Test
-  public void listWithNullsAdditionTest(){
-    client.post().uri("/calculator/add")
+  public void performDivisionByZero(){
+    client.post().uri("/calculator/binaryOperation")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"numbers\": [1, null, 3]}")
+            .body("""
+                {
+                  "operandOne": 10,
+                  "operandTwo": 0,
+                  "operator": "DIVIDE"
+                }
+                """)
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.result").isEqualTo(null)
-            .jsonPath("$.success").isEqualTo(false)
-            .jsonPath("$.errorMessage").isEqualTo("numbers list must not contain null elements");
+            .jsonPath("$.errorMessage").isEqualTo("Division by zero is not allowed.")
+            .jsonPath("$.success").isEqualTo(false);
   }
 
   @Test
-  public void emptyListAdditionTest(){
-    client.post().uri("/calculator/add")
+  public void performInvalidOperator(){
+    client.post().uri("/calculator/binaryOperation")
             .contentType(MediaType.APPLICATION_JSON)
-            .body("{\"numbers\": []}")
+            .body("""
+                {
+                  "operandOne": 10,
+                  "operandTwo": 5,
+                  "operator": "MODULO"
+                }
+                """)
             .exchange()
+            .expectStatus().isBadRequest()
             .expectBody()
             .jsonPath("$.result").isEqualTo(null)
-            .jsonPath("$.success").isEqualTo(false)
-            .jsonPath("$.errorMessage").isEqualTo("numbers list must not be empty");
+            .jsonPath("$.errorMessage").isEqualTo("Invalid operator: MODULO")
+            .jsonPath("$.success").isEqualTo(false);
   }
 }

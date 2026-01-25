@@ -3,23 +3,23 @@ package com.example.calculator.controller;
 import com.example.calculator.transfer.outgoing.CalculationResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.calculator.transfer.incoming.NumberListDTO;
-import com.example.calculator.validation.NumberListValidator;
+import com.example.calculator.service.CalculatorService;
+import com.example.calculator.domain.BinaryOperator;
+import com.example.calculator.transfer.incoming.BinaryOperationDTO;
 
 @RestController
 @RequestMapping("/calculator")
 public class CalculatorController {
 
-  @PostMapping("/add")
-  public ResponseEntity<CalculationResponseDTO>add(@RequestBody NumberListDTO numberList){
+  private final CalculatorService calculatorService = new CalculatorService();
+
+  @PostMapping("/binaryOperation")
+  public ResponseEntity<CalculationResponseDTO>performBinaryOperation(@RequestBody BinaryOperationDTO request){
     try {
-      NumberListValidator.validate(numberList);
-      double sum = numberList.numbers().stream()
-          .mapToDouble(Number::doubleValue)
-          .sum();
+      Number result = calculatorService.performBinaryOperation(request);
       return ResponseEntity.ok(new CalculationResponseDTO(
-          sum,
-          null,
+          result,
+          "Calculation successful",
           true
       ));
     }

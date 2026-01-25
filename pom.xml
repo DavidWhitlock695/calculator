@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>calculator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>returns-manager</name>
+	<name>calculator</name>
 	<description>Demo project using Spring Boot for returns-manager</description>
 	<url/>
 	<licenses>
@@ -40,12 +40,6 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.projectlombok</groupId>-->
-<!--			<artifactId>lombok</artifactId>-->
-<!--			<version>1.18.42</version>-->
-<!--			<scope>provided</scope>-->
-<!--		</dependency>-->
 	</dependencies>
 
 	<build>

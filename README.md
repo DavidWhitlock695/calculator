@@ -18,3 +18,11 @@ To run the image in a container at port 8080 (both as seen from within and witho
 5. Run "docker ps" to check the image is running, get its container ID and go to localhost:8080/health
 6. Run "docker stop <container-id>" to stop the image
 7. Run "docker logs <container-id>" if you'd like to see the image's logs
+
+8. To Curl requests with a body use the following template as an example:
+
+```
+curl -X POST http://localhost:8080/calculator/binaryOperation \
+   -H "Content-Type: application/json" \
+   -d '{"operandOne": 0.1, "operandTwo": 0.2, "operator":"ADD"}'
+```

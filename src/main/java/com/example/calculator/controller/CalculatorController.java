@@ -32,7 +32,7 @@ public class CalculatorController {
       ));
     }
     catch (Exception e) {
-      return ResponseEntity.badRequest().body(new CalculationResponseDTO(
+      return ResponseEntity.internalServerError().body(new CalculationResponseDTO(
           null,
           "An unexpected error occurred",
           false

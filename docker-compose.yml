@@ -8,18 +8,26 @@ services:
       ports:
          - "5432:5432"
       volumes:
-         - calculator_db_data:/var/lib/postgresql/data
+         - calculator_db_data:/var/lib/postgresql
+      # Ensure the database is ready before the application starts
+      healthcheck:
+         test: ["CMD-SHELL", "pg_isready -U calculator_user -d calculator_db"]
+         interval: 5s
+         timeout: 5s
+         retries: 5
 
    app:
       build: .
       ports:
          - "8080:8080"
       environment:
+         # This overrides the default Spring Boot datasource settings in the application.properties file
          SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/calculator_db
          SPRING_DATASOURCE_USERNAME: calculator_user
          SPRING_DATASOURCE_PASSWORD: calculator_pass
       depends_on:
-         - db
+         db:
+             condition: service_healthy
 
 volumes:
    calculator_db_data:

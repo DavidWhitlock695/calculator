@@ -1,6 +1,8 @@
 package com.example.calculator.service;
 
+import java.math.BigDecimal;
+
 public interface UnitConversionServiceInterface {
-  double convertUnitById(Long fromUnitId, Long toUnitId, double value);
+  BigDecimal convertUnitById(Long fromUnitId, Long toUnitId, BigDecimal value);
   // Later add by symbol/name
 }

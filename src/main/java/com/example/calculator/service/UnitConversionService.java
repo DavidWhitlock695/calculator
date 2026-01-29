@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.calculator.repository.UnitRepository;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**
  * Service class for handling unit conversions.
  * Only conversions between the same category are allowed.
@@ -19,9 +22,10 @@ public class UnitConversionService implements UnitConversionServiceInterface {
 
   private final UnitRepository unitRepository;
   private static final String AFFINE_CONVERSION_TYPE_NAME = "affine";
+  private static final int SCALE = 10;
 
   @Override
-  public double convertUnitById(Long fromUnitId, Long toUnitId, double value) {
+  public BigDecimal convertUnitById(Long fromUnitId, Long toUnitId, BigDecimal value) {
       // Get each unit from repository
     Unit fromUnit =
             unitRepository.findById(fromUnitId).orElseThrow(() -> new IllegalArgumentException(
@@ -37,11 +41,13 @@ public class UnitConversionService implements UnitConversionServiceInterface {
         throw new IllegalArgumentException("One or both units use a non-affine conversion type.");
     }
     // Convert 'value' from 'fromUnit' to base unit
-    double valueInBaseUnit = (value * fromUnit.getConversionToBaseFactor())
-            + fromUnit.getConversionToBaseOffset();
+    BigDecimal valueInBaseUnit = value
+            .multiply(fromUnit.getConversionToBaseFactor())
+            .add(fromUnit.getConversionToBaseOffset());
     // Convert and return from base unit to 'toUnit'
-    return (valueInBaseUnit - toUnit.getConversionToBaseOffset())
-            / toUnit.getConversionToBaseFactor();
+    return (valueInBaseUnit
+            .subtract(toUnit.getConversionToBaseOffset()))
+            .divide(toUnit.getConversionToBaseFactor(),SCALE, RoundingMode.HALF_UP );
   }
 
   private boolean isUnitAffine(Unit unit) {

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 /**
   Represents a measurement unit with conversion details to other units within the same category.
   Only one unit per category should be marked as the base unit.
@@ -38,8 +40,8 @@ public class Unit {
   @JoinColumn(name = "conversion_type_id", nullable = false)
   private ConversionType conversionType;
   @Column(nullable = false)
-  private double conversionToBaseFactor;
+  private BigDecimal conversionToBaseFactor;
   @Column(nullable = false)
-  private double conversionToBaseOffset;
+  private BigDecimal conversionToBaseOffset;
   private String notes;
 }

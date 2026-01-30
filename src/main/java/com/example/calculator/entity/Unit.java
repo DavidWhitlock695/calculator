@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 
   Notice that we enforce both optional=false and nullable=false on the ManyToOne relationships
   to ensure that these associations are always present. One enforces this at the JPA level, the other at the database schema level.
+ TODO: consider adding bounds for some units e.g. Kelvin cannot be negative.
  **/
 
 @Entity
@@ -39,9 +40,11 @@ public class Unit {
   @ManyToOne(optional = false)
   @JoinColumn(name = "conversion_type_id", nullable = false)
   private ConversionType conversionType;
-  @Column(nullable = false)
+  // By default, BigDecimal maps to a DECIMAL(19,2) in most databases, which may not be
+  // sufficient for precise conversions.
+  @Column(nullable = false, precision = 20, scale = 10)
   private BigDecimal conversionToBaseFactor;
-  @Column(nullable = false)
+  @Column(nullable = false, precision = 20, scale = 10)
   private BigDecimal conversionToBaseOffset;
   private String notes;
 }

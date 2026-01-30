@@ -13,6 +13,14 @@ import java.math.RoundingMode;
  * Only conversions between the same category are allowed.
  * For now only affine transformations are supported.
  * Conversions are always handled via the base unit of the category.
+ * <p>
+ * Precision Note:
+ * As encountered during testing, BigDecimal arithmetic requires careful handling
+ * of scale and rounding.
+ * This implementation uses a fixed scale and HALF_UP rounding mode for division operations.
+ * There is also a level of precision loss due to the level of precision stored for factors and offsets in the database.
+ * In addition, conversion of very large to small units and vice versa may lead to precision loss
+ * (e.g. light years to millimetres)
  */
 
 @Service
@@ -39,6 +47,10 @@ public class UnitConversionService implements UnitConversionServiceInterface {
     // If either unit uses a non-affine conversion type, throw an exception
     if (!isUnitAffine(fromUnit) || !isUnitAffine(toUnit)) {
         throw new IllegalArgumentException("One or both units use a non-affine conversion type.");
+    }
+    // Check passed value is not null
+    if (value == null) {
+        throw new IllegalArgumentException("Value cannot be null.");
     }
     // Convert 'value' from 'fromUnit' to base unit
     BigDecimal valueInBaseUnit = value

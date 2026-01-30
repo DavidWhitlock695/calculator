@@ -27,6 +27,7 @@ public class UnitConversionController {
               unitConversionDTO.toUnitId(),
               unitConversionDTO.value()
       );
+      System.out.println(result);
       return ResponseEntity.ok(new CalculationResponseDTO(
               result,
               null,

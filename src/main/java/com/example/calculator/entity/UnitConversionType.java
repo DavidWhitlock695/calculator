@@ -11,7 +11,7 @@ import lombok.Setter;
 @Table(name = "conversion_types")
 @Getter
 @Setter
-public class ConversionType {
+public class UnitConversionType {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

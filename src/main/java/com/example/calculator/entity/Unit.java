@@ -39,7 +39,7 @@ public class Unit {
   private boolean isBaseUnit;
   @ManyToOne(optional = false)
   @JoinColumn(name = "conversion_type_id", nullable = false)
-  private ConversionType conversionType;
+  private UnitConversionType unitConversionType;
   // By default, BigDecimal maps to a DECIMAL(19,2) in most databases, which may not be
   // sufficient for precise conversions.
   @Column(nullable = false, precision = 20, scale = 10)

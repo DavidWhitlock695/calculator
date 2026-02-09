@@ -1,8 +1,8 @@
 package com.example.calculator.controller;
 
 import com.example.calculator.service.UnitConversionService;
-import com.example.calculator.transfer.incoming.UnitConversionDTO;
-import com.example.calculator.transfer.outgoing.CalculationResponseDTO;
+import com.example.calculator.transfer.request.UnitConversionRequestDTO;
+import com.example.calculator.transfer.response.CalculationResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,14 +20,13 @@ public class UnitConversionController {
   private final UnitConversionService unitConversionService;
 
   @PostMapping("/convertUnitById")
-  public ResponseEntity<CalculationResponseDTO> convertUnitById(@RequestBody UnitConversionDTO unitConversionDTO) {
+  public ResponseEntity<CalculationResponseDTO> convertUnitById(@RequestBody UnitConversionRequestDTO unitConversionRequestDTO) {
     try{
       BigDecimal result = unitConversionService.convertUnitById(
-              unitConversionDTO.fromUnitId(),
-              unitConversionDTO.toUnitId(),
-              unitConversionDTO.value()
+              unitConversionRequestDTO.fromUnitId(),
+              unitConversionRequestDTO.toUnitId(),
+              unitConversionRequestDTO.value()
       );
-      System.out.println(result);
       return ResponseEntity.ok(new CalculationResponseDTO(
               result,
               null,
@@ -36,6 +35,13 @@ public class UnitConversionController {
     }
     catch (IllegalArgumentException e){
       return ResponseEntity.badRequest().body(new CalculationResponseDTO(
+              null,
+              e.getMessage(),
+              false
+      ));
+    }
+    catch (IllegalStateException e){
+      return ResponseEntity.status(409).body(new CalculationResponseDTO(
               null,
               e.getMessage(),
               false

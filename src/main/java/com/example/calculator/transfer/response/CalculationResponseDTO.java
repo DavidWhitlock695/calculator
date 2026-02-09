@@ -1,4 +1,4 @@
-package com.example.calculator.transfer.outgoing;
+package com.example.calculator.transfer.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

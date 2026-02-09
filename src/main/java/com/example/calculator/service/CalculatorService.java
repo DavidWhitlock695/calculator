@@ -2,7 +2,7 @@ package com.example.calculator.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.example.calculator.transfer.incoming.BinaryOperationDTO;
+import com.example.calculator.transfer.request.BinaryOperationRequestDTO;
 import com.example.calculator.domain.BinaryOperator;
 
 import java.math.BigDecimal;
@@ -14,7 +14,7 @@ public class CalculatorService {
 
   private static final int SCALE = 10;
 
-  public BigDecimal performBinaryOperation(BinaryOperationDTO request) {
+  public BigDecimal performBinaryOperation(BinaryOperationRequestDTO request) {
     BigDecimal operandOne = request.operandOne();
     BigDecimal operandTwo = request.operandTwo();
     BinaryOperator operator;

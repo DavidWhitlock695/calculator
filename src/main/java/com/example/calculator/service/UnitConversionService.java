@@ -28,6 +28,27 @@ import java.math.RoundingMode;
 @RequiredArgsConstructor
 public class UnitConversionService implements UnitConversionServiceInterface {
 
+  private final UnitService unitService;
+
+  /*
+  A note on static and final:
+     - Static variables belong to a CLASS, not a specific instance
+     - Final variables cannot be reassigned after they are initialised
+
+     So in this case all of our variables are final because we don't want them reassigned after
+     initialisation.
+     However, the repository is not a part of this class, it is an external class injected by
+     Spring so it is not static, just final.
+
+     This is an important point for all fields in a service or repository class.
+     They should always be at least final, because otherwise if more than one class uses a
+     service or repository, they could interfere with each other by reassigning the fields, lead
+     to RACE CONDITIONS and other bugs.
+
+     Spring's dependency management ensures the same instance of a service/repository are used
+     wherever they are needed.
+     */
+
   private final UnitRepository unitRepository;
   private static final String AFFINE_CONVERSION_TYPE_NAME = "affine";
   private static final int SCALE = 10;
@@ -43,6 +64,10 @@ public class UnitConversionService implements UnitConversionServiceInterface {
     // If the units aren't the same category, throw an exception
     if (!fromUnit.getUnitCategory().getId().equals(toUnit.getUnitCategory().getId())) {
         throw new IllegalArgumentException("Units are of different categories.");
+    }
+    // Check there is a base unit in the category, otherwise we cannot convert
+    if (!unitService.isBaseUnitAlreadyPresentInCategory(fromUnit.getUnitCategory().getId())){
+        throw new IllegalStateException("No base unit present in category, cannot perform conversion.");
     }
     // If either unit uses a non-affine conversion type, throw an exception
     if (!isUnitAffine(fromUnit) || !isUnitAffine(toUnit)) {
@@ -63,6 +88,6 @@ public class UnitConversionService implements UnitConversionServiceInterface {
   }
 
   private boolean isUnitAffine(Unit unit) {
-    return unit.getConversionType().getName().equalsIgnoreCase(AFFINE_CONVERSION_TYPE_NAME);
+    return unit.getUnitConversionType().getName().equalsIgnoreCase(AFFINE_CONVERSION_TYPE_NAME);
   }
 }

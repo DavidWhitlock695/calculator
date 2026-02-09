@@ -1,9 +1,9 @@
 package com.example.calculator.config;
 
-import com.example.calculator.entity.ConversionType;
+import com.example.calculator.entity.UnitConversionType;
 import com.example.calculator.entity.Unit;
 import com.example.calculator.entity.UnitCategory;
-import com.example.calculator.repository.ConversionTypeRepository;
+import com.example.calculator.repository.UnitConversionTypeRepository;
 import com.example.calculator.repository.UnitCategoryRepository;
 import com.example.calculator.repository.UnitRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,22 +27,22 @@ public class DataInitialiser implements CommandLineRunner {
 
   // The CommandLineRunner interface indicates that a bean should run when it is contained within a SpringApplication.
 
-  private final ConversionTypeRepository conversionTypeRepository;
+  private final UnitConversionTypeRepository unitConversionTypeRepository;
   private final UnitCategoryRepository unitCategoryRepository;
   private final UnitRepository unitRepository;
 
   @Override
   public void run(String... args) throws Exception {
     // Only initialise if database is empty
-    if (conversionTypeRepository.count() > 0) {
+    if (unitConversionTypeRepository.count() > 0) {
       return;
     }
 
     // Create conversion type affine
-    ConversionType affine = new ConversionType();
+    UnitConversionType affine = new UnitConversionType();
     affine.setName("affine");
     affine.setDescription("Linear conversion using factor and offset. Conversion to base unit: value * factor + offset");
-    conversionTypeRepository.save(affine);
+    unitConversionTypeRepository.save(affine);
 
     // Create unit categories temperature and length
     UnitCategory temperature = new UnitCategory();
@@ -57,7 +57,7 @@ public class DataInitialiser implements CommandLineRunner {
     Unit kelvin = new Unit();
     kelvin.setName("kelvin");
     kelvin.setSymbol("K");
-    kelvin.setConversionType(affine);
+    kelvin.setUnitConversionType(affine);
     kelvin.setBaseUnit(true);
     kelvin.setConversionToBaseFactor(BigDecimal.ONE);
     kelvin.setConversionToBaseOffset(BigDecimal.ZERO);
@@ -69,7 +69,7 @@ public class DataInitialiser implements CommandLineRunner {
     Unit celsius = new Unit();
     celsius.setName("celsius");
     celsius.setSymbol("°C");
-    celsius.setConversionType(affine);
+    celsius.setUnitConversionType(affine);
     celsius.setBaseUnit(false);
     celsius.setConversionToBaseFactor(BigDecimal.valueOf(1.0));
     celsius.setConversionToBaseOffset(BigDecimal.valueOf(273.15));
@@ -81,7 +81,7 @@ public class DataInitialiser implements CommandLineRunner {
     Unit fahrenheit = new Unit();
     fahrenheit.setName("fahrenheit");
     fahrenheit.setSymbol("°F");
-    fahrenheit.setConversionType(affine);
+    fahrenheit.setUnitConversionType(affine);
     fahrenheit.setBaseUnit(false);
     fahrenheit.setConversionToBaseFactor(new BigDecimal("5").divide(new BigDecimal("9"), 10, RoundingMode.HALF_UP));
     fahrenheit.setConversionToBaseOffset(new BigDecimal("459.67").multiply(new BigDecimal("5")).divide(new BigDecimal("9"), 10,
@@ -95,7 +95,7 @@ public class DataInitialiser implements CommandLineRunner {
     Unit meter = new Unit();
     meter.setName("meter");
     meter.setSymbol("m");
-    meter.setConversionType(affine);
+    meter.setUnitConversionType(affine);
     meter.setBaseUnit(true);
     meter.setConversionToBaseFactor(BigDecimal.ONE);
     meter.setConversionToBaseOffset(BigDecimal.ZERO);
@@ -107,7 +107,7 @@ public class DataInitialiser implements CommandLineRunner {
     Unit kilometre = new Unit();
     kilometre.setName("kilometre");
     kilometre.setSymbol("km");
-    kilometre.setConversionType(affine);
+    kilometre.setUnitConversionType(affine);
     kilometre.setBaseUnit(false);
     kilometre.setConversionToBaseFactor(BigDecimal.valueOf(1000.0));
     kilometre.setConversionToBaseOffset(BigDecimal.ZERO);
@@ -119,7 +119,7 @@ public class DataInitialiser implements CommandLineRunner {
     Unit mile = new Unit();
     mile.setName("mile");
     mile.setSymbol("mi");
-    mile.setConversionType(affine);
+    mile.setUnitConversionType(affine);
     mile.setBaseUnit(false);
     mile.setConversionToBaseFactor(BigDecimal.valueOf(1609.344));
     mile.setConversionToBaseOffset(BigDecimal.ZERO);

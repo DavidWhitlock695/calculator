@@ -3,6 +3,7 @@ package com.example.calculator.controller;
 import com.example.calculator.service.UnitConversionService;
 import com.example.calculator.transfer.request.UnitConversionRequestDTO;
 import com.example.calculator.transfer.response.CalculationResponseDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class UnitConversionController {
   private final UnitConversionService unitConversionService;
 
   @PostMapping("/convertUnitById")
-  public ResponseEntity<CalculationResponseDTO> convertUnitById(@RequestBody UnitConversionRequestDTO unitConversionRequestDTO) {
+  public ResponseEntity<CalculationResponseDTO> convertUnitById(@Valid @RequestBody UnitConversionRequestDTO unitConversionRequestDTO) {
     try{
       BigDecimal result = unitConversionService.convertUnitById(
               unitConversionRequestDTO.fromUnitId(),

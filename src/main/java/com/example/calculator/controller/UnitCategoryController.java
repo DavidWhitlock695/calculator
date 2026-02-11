@@ -6,10 +6,7 @@ import com.example.calculator.transfer.response.UnitCategoryResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/unit-categories")
@@ -18,7 +15,7 @@ public class UnitCategoryController {
 
   private final UnitCategoryService unitCategoryService;
 
-  @GetMapping("/create-unit-category")
+  @PostMapping("/create-unit-category")
   public ResponseEntity<UnitCategoryResponseDTO> createUnitCategory(@Valid @RequestBody UnitCategoryRequestDTO unitCategoryRequestDTO) {
     try {
       UnitCategoryResponseDTO responseDTO = unitCategoryService.create(unitCategoryRequestDTO);

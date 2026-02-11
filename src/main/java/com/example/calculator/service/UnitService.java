@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+// Note: service layer handles business logic but validation of relationships is done in mappers
 
 @Service
 @RequiredArgsConstructor

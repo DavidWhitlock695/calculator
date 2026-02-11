@@ -20,6 +20,8 @@ public class UnitController {
   // It includes nested validation for UnitCategory and UnitConversionType.
   // Annotations like NotNull are only active when the Valid annotation is present on the method parameter.
 
+  // TODO: this should handle DTOs, not entities. Move Valid annotation as required.
+
   @GetMapping("/create")
   public Unit createUnit(@Valid @RequestBody Unit newUnit){
     // Validate

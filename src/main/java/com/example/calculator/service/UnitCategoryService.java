@@ -1,6 +1,7 @@
 package com.example.calculator.service;
 
 import com.example.calculator.entity.UnitCategory;
+import com.example.calculator.mapper.UnitCategoryMapper;
 import com.example.calculator.repository.UnitCategoryRepository;
 import com.example.calculator.transfer.request.UnitCategoryRequestDTO;
 import com.example.calculator.transfer.response.UnitCategoryResponseDTO;
@@ -16,30 +17,32 @@ import java.util.List;
 public class UnitCategoryService implements EntityServiceInterface<UnitCategoryRequestDTO,
         UnitCategoryResponseDTO, Long> {
 
+  private final UnitCategoryMapper unitCategoryMapper;
   private final UnitCategoryRepository unitCategoryRepository;
 
   @Override
   public UnitCategoryResponseDTO create(UnitCategoryRequestDTO unitCategoryRequestDTO) {
     ensureNameIsUnique(unitCategoryRequestDTO.name());
-    UnitCategory unitCategory = new UnitCategory();
-    unitCategory.setName(unitCategoryRequestDTO.name());
-    UnitCategory savedCategory = unitCategoryRepository.save(unitCategory);
-    return convertFromEntityToDTO(savedCategory);
+    UnitCategory newUnit = unitCategoryMapper.toEntity(unitCategoryRequestDTO);
+    UnitCategory savedCategory = unitCategoryRepository.save(newUnit);
+    return unitCategoryMapper.toDTO(savedCategory);
   }
 
   @Override
   public UnitCategoryResponseDTO findById(Long unitCategoryId) {
     UnitCategory unitCategory = getCategoryByIdOrThrow(unitCategoryId);
-    return convertFromEntityToDTO(unitCategory);
+    return unitCategoryMapper.toDTO(unitCategory);
   }
 
   @Override
   public UnitCategoryResponseDTO updateById(Long unitCategoryId, UnitCategoryRequestDTO entity) {
     UnitCategory existingCategory = getCategoryByIdOrThrow(unitCategoryId);
-    // It's a simple object so mapping will occur in service layer directly.
-    existingCategory.setName(entity.name());
+    if (!existingCategory.getName().equals(entity.name())) {
+      ensureNameIsUnique(entity.name());
+    }
+    unitCategoryMapper.updateEntityFromDTO(existingCategory, entity);
     UnitCategory updatedCategory = unitCategoryRepository.save(existingCategory);
-    return convertFromEntityToDTO(updatedCategory);
+    return unitCategoryMapper.toDTO(updatedCategory);
   }
 
   @Override
@@ -52,9 +55,7 @@ public class UnitCategoryService implements EntityServiceInterface<UnitCategoryR
   @Override
   public List<UnitCategoryResponseDTO> findAll() {
     List<UnitCategory> categories = unitCategoryRepository.findAll();
-    return categories.stream()
-        .map(this::convertFromEntityToDTO)
-        .toList();
+    return unitCategoryMapper.toDTOList(categories);
   }
 
   // In some cases, the caller will not use the returned object
@@ -68,12 +69,5 @@ public class UnitCategoryService implements EntityServiceInterface<UnitCategoryR
     if (unitCategoryRepository.existsByName(name)) {
       throw new EntityExistsException("Unit category with name '" + name + "' already exists.");
     }
-  }
-
-  private UnitCategoryResponseDTO convertFromEntityToDTO(UnitCategory unitCategory) {
-    return new UnitCategoryResponseDTO(
-        unitCategory.getId(),
-        unitCategory.getName()
-    );
   }
 }

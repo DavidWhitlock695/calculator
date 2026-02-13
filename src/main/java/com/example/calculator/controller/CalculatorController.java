@@ -16,28 +16,8 @@ public class CalculatorController {
 
   @PostMapping("/binaryOperation")
   public ResponseEntity<CalculationResponseDTO>performBinaryOperation(@RequestBody BinaryOperationRequestDTO request){
-    try {
       BigDecimal result = calculatorService.performBinaryOperation(request);
-      return ResponseEntity.ok(new CalculationResponseDTO(
-          result,
-          null,
-          true
-      ));
-    }
-    catch (IllegalArgumentException e){
-      return ResponseEntity.badRequest().body(new CalculationResponseDTO(
-          null,
-          e.getMessage(),
-          false
-      ));
-    }
-    catch (Exception e) {
-      return ResponseEntity.internalServerError().body(new CalculationResponseDTO(
-          null,
-          "An unexpected error occurred",
-          false
-      ));
-    }
+      return ResponseEntity.ok(new CalculationResponseDTO(result));
   }
 
   @GetMapping("/ping")

@@ -7,5 +7,5 @@ import java.math.BigDecimal;
 // JSON Include is used to keep null fields in the serialized JSON
 
 @JsonInclude(JsonInclude.Include.ALWAYS)
-public record CalculationResponseDTO(BigDecimal result, String errorMessage, boolean success) {
+public record CalculationResponseDTO(BigDecimal result) {
 }

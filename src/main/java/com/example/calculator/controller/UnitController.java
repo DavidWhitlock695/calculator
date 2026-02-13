@@ -1,17 +1,21 @@
 package com.example.calculator.controller;
 
-import com.example.calculator.entity.Unit;
+import com.example.calculator.service.UnitService;
+import com.example.calculator.transfer.request.UnitRequestDTO;
+import com.example.calculator.transfer.response.UnitResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/units")
 @RequiredArgsConstructor
 public class UnitController {
+
+  private final UnitService unitService;
   // Crud operations for units
 
   // Notice the use of the Valid annotation.
@@ -20,12 +24,34 @@ public class UnitController {
   // It includes nested validation for UnitCategory and UnitConversionType.
   // Annotations like NotNull are only active when the Valid annotation is present on the method parameter.
 
-  // TODO: this should handle DTOs, not entities. Move Valid annotation as required.
-
-  @GetMapping("/create")
-  public Unit createUnit(@Valid @RequestBody Unit newUnit){
-    // Validate
-    // Pass to service layer
-    return newUnit; // Placeholder response
+  @PostMapping("/create")
+  public ResponseEntity<UnitResponseDTO> createUnit(@Valid @RequestBody UnitRequestDTO newUnit){
+    UnitResponseDTO responseDTO = unitService.create(newUnit);
+    return ResponseEntity.ok(responseDTO);
   }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<UnitResponseDTO> getUnitById(@PathVariable Long id) {
+    UnitResponseDTO responseDTO = unitService.findById(id);
+    return ResponseEntity.ok(responseDTO);
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<UnitResponseDTO> updateUnit(@PathVariable Long id, @Valid @RequestBody UnitRequestDTO updatedUnit) {
+    UnitResponseDTO responseDTO = unitService.updateById(id, updatedUnit);
+    return ResponseEntity.ok(responseDTO);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteUnit(@PathVariable Long id) {
+    unitService.deleteById(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/all")
+  public ResponseEntity<List<UnitResponseDTO>> getAllUnits() {
+    List<UnitResponseDTO> responseDTOs = unitService.findAll();
+    return ResponseEntity.ok(responseDTOs);
+  }
+
 }

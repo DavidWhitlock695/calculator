@@ -22,39 +22,12 @@ public class UnitConversionController {
 
   @PostMapping("/convertUnitById")
   public ResponseEntity<CalculationResponseDTO> convertUnitById(@Valid @RequestBody UnitConversionRequestDTO unitConversionRequestDTO) {
-    try{
-      BigDecimal result = unitConversionService.convertUnitById(
-              unitConversionRequestDTO.fromUnitId(),
-              unitConversionRequestDTO.toUnitId(),
-              unitConversionRequestDTO.value()
-      );
-      return ResponseEntity.ok(new CalculationResponseDTO(
-              result,
-              null,
-              true
-      ));
-    }
-    catch (IllegalArgumentException e){
-      return ResponseEntity.badRequest().body(new CalculationResponseDTO(
-              null,
-              e.getMessage(),
-              false
-      ));
-    }
-    catch (IllegalStateException e){
-      return ResponseEntity.status(409).body(new CalculationResponseDTO(
-              null,
-              e.getMessage(),
-              false
-      ));
-    }
-    catch (Exception e) {
-      return ResponseEntity.internalServerError().body(new CalculationResponseDTO(
-              null,
-              "An unexpected error occurred",
-              false
-      ));
-    }
+    BigDecimal result =
+            unitConversionService.convertUnitById(
+                    unitConversionRequestDTO.fromUnitId(),
+                    unitConversionRequestDTO.toUnitId(),
+                    unitConversionRequestDTO.value());
+    return ResponseEntity.ok(new CalculationResponseDTO(result));
   }
 
 }

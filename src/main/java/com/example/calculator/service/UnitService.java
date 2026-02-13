@@ -1,16 +1,26 @@
 package com.example.calculator.service;
 
 import com.example.calculator.entity.Unit;
+import com.example.calculator.exception.BusinessRuleTypes;
+import com.example.calculator.exception.BusinessRuleViolationException;
 import com.example.calculator.mapper.UnitMapper;
 import com.example.calculator.repository.UnitRepository;
 import com.example.calculator.transfer.request.UnitRequestDTO;
 import com.example.calculator.transfer.response.UnitResponseDTO;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+
+/**
+ * Note that for creating and updating units we have a matrix of options to ensure the business rules are followed:
+ * [remains not base, remains base, becomes base, ceases to be base] x [category changes or not]
+ * The service layer handles the validation of these rules, but the mappers handle the validation of the relationships
+ **/
 
 // Note: service layer handles business logic but validation of relationships is done in mappers
 
@@ -67,13 +77,13 @@ public class UnitService implements EntityServiceInterface<UnitRequestDTO, UnitR
 
   private void ensureNameIsUnique(String name) {
     if (unitRepository.findByName(name).isPresent()) {
-      throw new IllegalArgumentException("Unit with name " + name + " already exists");
+      throw new EntityExistsException("Unit with name '" + name + "' already exists.");
     }
   }
 
   private void ensureSymbolIsUnique(String symbol) {
     if (unitRepository.findBySymbol(symbol).isPresent()) {
-      throw new IllegalArgumentException("Unit with symbol " + symbol + " already exists");
+      throw new EntityExistsException("Unit with symbol '" + symbol + "' already exists.");
     }
   }
 
@@ -89,7 +99,7 @@ public class UnitService implements EntityServiceInterface<UnitRequestDTO, UnitR
     ensureSymbolIsUnique(unitRequestDTO.symbol());
     // ensure if the unit is marked as base unit, there is no other base unit in the same category,
     if (unitRequestDTO.isBaseUnit() && isBaseUnitAlreadyPresentInCategory(unitRequestDTO.categoryId())) {
-      throw new IllegalArgumentException("A base unit already exists in this category.");
+      throw new EntityExistsException("Base unit already exists in category with id " + unitRequestDTO.categoryId());
     }
     //If creating a new base unit, factor and offset must be 1 and 0 respectively, otherwise throw an exception.
     if (unitRequestDTO.isBaseUnit()) {
@@ -98,10 +108,10 @@ public class UnitService implements EntityServiceInterface<UnitRequestDTO, UnitR
   }
   private void validateBaseUnitHasCorrectConversion(UnitRequestDTO dto) {
     if (dto.conversionToBaseFactor().compareTo(BigDecimal.ONE) != 0){
-      throw new IllegalArgumentException("Base unit must have conversion factor of 1.");
+      throw new BusinessRuleViolationException(BusinessRuleTypes.BASE_UNIT_MUST_HAVE_FACTOR_OF_ONE);
     }
     if (dto.conversionToBaseOffset().compareTo(BigDecimal.ZERO) != 0) {
-      throw new IllegalArgumentException("Base unit must have conversion offset of 0.");
+      throw new BusinessRuleViolationException(BusinessRuleTypes.BASE_UNIT_MUST_HAVE_OFFSET_OF_ZERO);
     }
   }
 
@@ -117,13 +127,13 @@ public class UnitService implements EntityServiceInterface<UnitRequestDTO, UnitR
     }
     // If the base unit status is being updated to true, ensure there is no other base unit in the same category
     if (!existingUnit.isBaseUnit() && dto.isBaseUnit() && isBaseUnitAlreadyPresentInCategory(dto.categoryId())) {
-      throw new IllegalArgumentException("A base unit already exists in this category.");
+      throw new EntityExistsException("Base unit already exists in category with id " + dto.categoryId());
     }
     // If the base unit remains true, but the category is being changed, ensure there is no other base unit in the new category
     if (existingUnit.isBaseUnit() && dto.isBaseUnit()
             && !existingUnit.getUnitCategory().getId().equals(dto.categoryId())
             && isBaseUnitAlreadyPresentInCategory(dto.categoryId())) {
-      throw new IllegalArgumentException("A base unit already exists in the new category.");
+      throw new EntityExistsException("Base unit already exists in category with id " + dto.categoryId());
     }
     //If creating a new base unit, factor and offset must be 1 and 0 respectively, otherwise throw an exception.
     if (dto.isBaseUnit()) {

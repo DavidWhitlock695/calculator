@@ -1,12 +1,16 @@
 package com.example.calculator.service;
 
 import com.example.calculator.entity.Unit;
+import com.example.calculator.exception.BusinessRuleTypes;
+import com.example.calculator.exception.BusinessRuleViolationException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.calculator.repository.UnitRepository;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 
 /**
  * Service class for handling unit conversions.
@@ -56,14 +60,14 @@ public class UnitConversionService implements UnitConversionServiceInterface {
   @Override
   public BigDecimal convertUnitById(Long fromUnitId, Long toUnitId, BigDecimal value) {
       // Get each unit from repository
-    Unit fromUnit =
-            unitRepository.findById(fromUnitId).orElseThrow(() -> new IllegalArgumentException(
-                    "From unit not found: " + fromUnitId));
-    Unit toUnit = unitRepository.findById(toUnitId).orElseThrow(() -> new IllegalArgumentException(
-            "To unit not found: " + toUnitId));
+    Unit fromUnit = getUnitByIdOrThrow(fromUnitId);
+    Unit toUnit = getUnitByIdOrThrow(toUnitId);
     // If the units aren't the same category, throw an exception
     if (!fromUnit.getUnitCategory().getId().equals(toUnit.getUnitCategory().getId())) {
-        throw new IllegalArgumentException("Units are of different categories.");
+        throw new BusinessRuleViolationException(BusinessRuleTypes.INVALID_CONVERSION_UNIT_CATEGORIES_COMBINATION, Map.of(
+                "fromUnitCategory", fromUnit.getUnitCategory().getName(),
+                "toUnitCategory", toUnit.getUnitCategory().getName()
+         ));
     }
     // Check there is a base unit in the category, otherwise we cannot convert
     if (!unitService.isBaseUnitAlreadyPresentInCategory(fromUnit.getUnitCategory().getId())){
@@ -71,11 +75,10 @@ public class UnitConversionService implements UnitConversionServiceInterface {
     }
     // If either unit uses a non-affine conversion type, throw an exception
     if (!isUnitAffine(fromUnit) || !isUnitAffine(toUnit)) {
-        throw new IllegalArgumentException("One or both units use a non-affine conversion type.");
-    }
-    // Check passed value is not null
-    if (value == null) {
-        throw new IllegalArgumentException("Value cannot be null.");
+        throw new BusinessRuleViolationException(BusinessRuleTypes.INVALID_CONVERSION_TYPE, Map.of(
+                "fromUnitConversionType", fromUnit.getUnitConversionType().getName(),
+                "toUnitConversionType", toUnit.getUnitConversionType().getName()
+        ));
     }
     // Convert 'value' from 'fromUnit' to base unit
     BigDecimal valueInBaseUnit = value
@@ -89,5 +92,10 @@ public class UnitConversionService implements UnitConversionServiceInterface {
 
   private boolean isUnitAffine(Unit unit) {
     return unit.getUnitConversionType().getName().equalsIgnoreCase(AFFINE_CONVERSION_TYPE_NAME);
+  }
+
+  private Unit getUnitByIdOrThrow(Long unitId) {
+    return unitRepository.findById(unitId)
+            .orElseThrow(() -> new EntityNotFoundException("Unit with id " + unitId + " not found"));
   }
 }

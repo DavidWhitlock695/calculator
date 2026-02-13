@@ -1,5 +1,7 @@
 package com.example.calculator.service;
 
+import com.example.calculator.exception.BusinessRuleTypes;
+import com.example.calculator.exception.BusinessRuleViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.calculator.transfer.request.BinaryOperationRequestDTO;
@@ -7,6 +9,7 @@ import com.example.calculator.domain.BinaryOperator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +24,8 @@ public class CalculatorService {
     try {
       operator = BinaryOperator.valueOf(request.operator());
     } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Invalid operator: " + request.operator());
+      throw new BusinessRuleViolationException(BusinessRuleTypes.INVALID_OPERATOR, Map.of(
+              "Invalid operator: ", request.operator()));
     }
     return switch (operator) {
       case ADD -> operandOne.add(operandTwo);
@@ -29,7 +33,7 @@ public class CalculatorService {
       case MULTIPLY -> operandOne.multiply(operandTwo);
       case DIVIDE -> {
         if (operandTwo.doubleValue() == 0) {
-          throw new IllegalArgumentException("Division by zero is not allowed.");
+          throw new BusinessRuleViolationException(BusinessRuleTypes.DIVISION_BY_ZERO);
         }
         yield operandOne.divide(operandTwo, SCALE, RoundingMode.HALF_UP);
       }
